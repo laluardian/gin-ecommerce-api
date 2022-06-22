@@ -102,3 +102,12 @@ func AuthCheck(c *gin.Context, userId xid.ID) *JwtPayload {
 
 	return authPayload
 }
+
+func CheckUserRole(c *gin.Context) *JwtPayload {
+	authPayload := c.MustGet(JwtPayloadKey).(*JwtPayload)
+	if authPayload.Role != RoleAdmin {
+		return nil
+	}
+
+	return authPayload
+}
