@@ -1,6 +1,6 @@
 ## TODO
 - Tests
-- Product
+- <s>Product</s>
 - Category
 - Order
 - Wishlist
