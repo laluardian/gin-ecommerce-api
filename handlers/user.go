@@ -127,14 +127,14 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	// in the context when the user is already authenticated the user id can also be retrieved
 	// directly from the jwt payload (since it is set to be included in the jwt payload)
 	//
-	// for this project I prefer to retrieve the user id from both param and jwt payload and then
-	// compare them manually before performing any db operation in a protected route's handler
+	// for this particular case (user handler) I prefer to retrieve the user id from both param and jwt payload
+	// and then compare them manually before performing any db operation in a protected route's handler
 	userId, _ := xid.FromString(c.Param("userId"))
 	// check if the user id from param matches the user id in jwt payload
 	payload := utils.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unatuhorized",
+			"error": "Unauthorized",
 		})
 		return
 	}
@@ -174,7 +174,7 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully updated user",
+		"message": "User successfully updated",
 	})
 }
 
@@ -183,7 +183,7 @@ func (uh *userHandler) UpdatePassword(c *gin.Context) {
 	payload := utils.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unatuhorized",
+			"error": "Unauthorized",
 		})
 		return
 	}
@@ -228,7 +228,7 @@ func (uh *userHandler) UpdatePassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully updated password",
+		"message": "Password successfully updated",
 	})
 }
 
@@ -237,7 +237,7 @@ func (uh *userHandler) DeleteUser(c *gin.Context) {
 	payload := utils.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unatuhorized",
+			"error": "Unauthorized",
 		})
 		return
 	}
@@ -258,6 +258,6 @@ func (uh *userHandler) DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully deleted user",
+		"message": "User successfully deleted",
 	})
 }
