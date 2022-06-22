@@ -32,11 +32,9 @@ type JwtPayload struct {
 }
 
 func newJwtPayload(user *models.User) *JwtPayload {
-	var role string
+	role := RoleUser
 	if user.IsAdmin {
 		role = RoleAdmin
-	} else {
-		role = RoleUser
 	}
 
 	return &JwtPayload{
