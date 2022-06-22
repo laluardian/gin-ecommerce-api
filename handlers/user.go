@@ -131,7 +131,7 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	// compare them manually before performing any db operation in a protected route's handler
 	userId, _ := xid.FromString(c.Param("userId"))
 	// check if the user id from param matches the user id in jwt payload
-	payload := utils.AuthCheck(c, userId)
+	payload := utils.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unatuhorized",
@@ -180,7 +180,7 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 
 func (uh *userHandler) UpdatePassword(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.AuthCheck(c, userId)
+	payload := utils.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unatuhorized",
@@ -234,7 +234,7 @@ func (uh *userHandler) UpdatePassword(c *gin.Context) {
 
 func (uh *userHandler) DeleteUser(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.AuthCheck(c, userId)
+	payload := utils.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unatuhorized",

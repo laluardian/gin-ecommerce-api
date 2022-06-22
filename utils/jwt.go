@@ -94,7 +94,7 @@ func VerifyToken(token string) (*JwtPayload, error) {
 	return payload, nil
 }
 
-func AuthCheck(c *gin.Context, userId xid.ID) *JwtPayload {
+func CheckUserId(c *gin.Context, userId xid.ID) *JwtPayload {
 	authPayload := c.MustGet(JwtPayloadKey).(*JwtPayload)
 	if authPayload.Sub != userId {
 		return nil
