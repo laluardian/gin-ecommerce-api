@@ -29,15 +29,18 @@ func (ur *userRepository) Create(user *models.User) error {
 }
 
 func (ur *userRepository) FindByEmail(email string) (user models.User, err error) {
-	return user, ur.db.First(&user, "email = ?", email).Error
+	err = ur.db.First(&user, "email = ?", email).Error
+	return user, err
 }
 
 func (ur *userRepository) FindById(userId xid.ID) (user models.User, err error) {
-	return user, ur.db.First(&user, "id = ?", userId).Error
+	err = ur.db.First(&user, "id = ?", userId).Error
+	return user, err
 }
 
 func (ur *userRepository) FindMany() (users []models.User, err error) {
-	return users, ur.db.Find(&users).Error
+	err = ur.db.Find(&users).Error
+	return users, err
 }
 
 func (ur *userRepository) UpdateUser(user models.User) error {
