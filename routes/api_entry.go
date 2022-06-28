@@ -14,6 +14,7 @@ func RunApi() error {
 	db := utils.InitDB(dsn)
 	userHandler := handlers.NewUserHandler(db)
 	productHandler := handlers.NewProductHandler(db)
+	addressHandler := handlers.NewAddressHandler(db)
 
 	r := gin.Default()
 	api := r.Group("/api")
@@ -31,6 +32,15 @@ func RunApi() error {
 		userProtectedRoutes.PATCH("/:userId", userHandler.UpdateUser)
 		userProtectedRoutes.PATCH("/:userId/password", userHandler.UpdatePassword)
 		userProtectedRoutes.DELETE("/:userId", userHandler.DeleteUser)
+	}
+
+	addressRoutes := userProtectedRoutes.Group("/:userId/addresses")
+	{
+		addressRoutes.POST("/", addressHandler.AddAddress)
+		addressRoutes.GET("/", addressHandler.GetUserAddresses)
+		addressRoutes.GET("/:addressId", addressHandler.GetAddress)
+		addressRoutes.PATCH("/:addressId", addressHandler.UpdateAddress)
+		addressRoutes.DELETE("/:addressId", addressHandler.DeleteAddress)
 	}
 
 	productRoutes := api.Group("/products")

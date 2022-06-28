@@ -15,6 +15,8 @@ type User struct {
 	IsAdmin   bool      `gorm:"not null" json:"is_admin"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+
+	Addresses []Address `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"addresses,omitempty"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
