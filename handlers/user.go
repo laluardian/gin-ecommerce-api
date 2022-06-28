@@ -127,8 +127,8 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	// in the context when the user is already authenticated the user id can also be retrieved
 	// directly from the jwt payload (since it is set to be included in the jwt payload)
 	//
-	// for this particular case (user handler) I prefer to retrieve the user id from both param and jwt payload
-	// and then compare them manually before performing any db operation in a protected route's handler
+	// for this particular case (user handler---other handlers might, too) I prefer to retrieve the user id from both
+	// param and jwt payload and then compare them manually before performing any db operation in a protected route's handler
 	userId, _ := xid.FromString(c.Param("userId"))
 	// check if the user id from param matches the user id in jwt payload
 	payload := utils.CheckUserId(c, userId)
@@ -149,7 +149,6 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	}
 
 	var userInput models.User
-
 	if err := c.ShouldBindJSON(&userInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -166,7 +165,7 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	userInput.ID = dbUser.ID
 	userInput.Password = dbUser.Password
 
-	if err := uh.repo.UpdateUser(userInput); err != nil {
+	if err := uh.repo.UpdateUser(&userInput); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -219,8 +218,8 @@ func (uh *userHandler) UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	userInput.ID = userId
-	if err := uh.repo.UpdatePassword(userInput); err != nil {
+	userInput.ID = dbUser.ID
+	if err := uh.repo.UpdatePassword(&userInput); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -242,15 +241,9 @@ func (uh *userHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	dbUser, err := uh.repo.FindById(userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	if err := uh.repo.Delete(dbUser); err != nil {
+	var user models.User
+	user.ID = userId
+	if err := uh.repo.Delete(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})

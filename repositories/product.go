@@ -7,11 +7,11 @@ import (
 )
 
 type ProductRepository interface {
-	Create(*models.Product) error
-	FindMany(string) ([]models.Product, error)
-	FindById(xid.ID) (models.Product, error)
-	Update(models.Product) error
-	Delete(xid.ID) error
+	Create(product *models.Product) error
+	FindMany(keyword string) ([]models.Product, error)
+	FindById(userId xid.ID) (models.Product, error)
+	Update(product *models.Product) error
+	Delete(productId xid.ID) error
 }
 
 type productRepository struct {
@@ -23,7 +23,7 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 }
 
 func (pr *productRepository) Create(product *models.Product) error {
-	return pr.db.Create(product).Error
+	return pr.db.Create(&product).Error
 }
 
 func (pr *productRepository) FindMany(keyword string) (products []models.Product, err error) {
@@ -36,7 +36,7 @@ func (pr *productRepository) FindById(productId xid.ID) (product models.Product,
 	return product, err
 }
 
-func (pr *productRepository) Update(product models.Product) error {
+func (pr *productRepository) Update(product *models.Product) error {
 	return pr.db.Save(&product).Error
 }
 

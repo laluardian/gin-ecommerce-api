@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,11 +12,11 @@ import (
 )
 
 type AddressHandler interface {
-	AddAddress(*gin.Context)
-	GetUserAddresses(*gin.Context)
-	GetAddress(*gin.Context)
-	UpdateAddress(*gin.Context)
-	DeleteAddress(*gin.Context)
+	AddAddress(c *gin.Context)
+	GetUserAddresses(c *gin.Context)
+	GetAddress(c *gin.Context)
+	UpdateAddress(c *gin.Context)
+	DeleteAddress(c *gin.Context)
 }
 
 type addressHandler struct {
@@ -71,8 +70,6 @@ func (ah *addressHandler) GetUserAddresses(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(payload)
-
 	addresses, err := ah.repo.FindByUser(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -95,9 +92,6 @@ func (ah *addressHandler) GetAddress(c *gin.Context) {
 		})
 		return
 	}
-
-	fmt.Println(userId)
-	fmt.Println(payload)
 
 	addressId, _ := xid.FromString(c.Param("addressId"))
 	address, err := ah.repo.FindByIds(userId, addressId)
@@ -134,8 +128,7 @@ func (ah *addressHandler) UpdateAddress(c *gin.Context) {
 	addressId, _ := xid.FromString(c.Param("addressId"))
 	addressInput.ID = addressId
 	addressInput.UserID = userId
-
-	if err := ah.repo.Update(addressInput); err != nil {
+	if err := ah.repo.Update(&addressInput); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})

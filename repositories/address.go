@@ -7,11 +7,11 @@ import (
 )
 
 type AddressRepository interface {
-	Create(*models.Address) error
+	Create(address *models.Address) error
 	FindByUser(userId xid.ID) ([]models.Address, error)
 	FindByIds(userId, addressId xid.ID) (models.Address, error)
-	Update(models.Address) error
-	Delete(xid.ID) error
+	Update(address *models.Address) error
+	Delete(addressId xid.ID) error
 }
 
 type addressRepository struct {
@@ -36,7 +36,7 @@ func (ar *addressRepository) FindByIds(userId, addressId xid.ID) (address models
 	return address, err
 }
 
-func (ar *addressRepository) Update(address models.Address) error {
+func (ar *addressRepository) Update(address *models.Address) error {
 	return ar.db.Save(&address).Error
 }
 

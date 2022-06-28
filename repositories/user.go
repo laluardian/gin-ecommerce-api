@@ -7,13 +7,13 @@ import (
 )
 
 type UserRepository interface {
-	Create(*models.User) error
-	FindByEmail(string) (models.User, error)
-	FindById(xid.ID) (models.User, error)
+	Create(user *models.User) error
+	FindByEmail(email string) (models.User, error)
+	FindById(userId xid.ID) (models.User, error)
 	FindMany() ([]models.User, error)
-	UpdateUser(models.User) error
-	UpdatePassword(models.User) error
-	Delete(models.User) error
+	UpdateUser(user *models.User) error
+	UpdatePassword(user *models.User) error
+	Delete(user *models.User) error
 }
 
 type userRepository struct {
@@ -25,7 +25,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (ur *userRepository) Create(user *models.User) error {
-	return ur.db.Create(user).Error
+	return ur.db.Create(&user).Error
 }
 
 func (ur *userRepository) FindByEmail(email string) (user models.User, err error) {
@@ -43,14 +43,14 @@ func (ur *userRepository) FindMany() (users []models.User, err error) {
 	return users, err
 }
 
-func (ur *userRepository) UpdateUser(user models.User) error {
+func (ur *userRepository) UpdateUser(user *models.User) error {
 	return ur.db.Save(&user).Error
 }
 
-func (ur *userRepository) UpdatePassword(user models.User) error {
+func (ur *userRepository) UpdatePassword(user *models.User) error {
 	return ur.db.Model(&user).Update("password", user.Password).Error
 }
 
-func (ur *userRepository) Delete(user models.User) error {
+func (ur *userRepository) Delete(user *models.User) error {
 	return ur.db.Delete(&user).Error
 }

@@ -12,11 +12,11 @@ import (
 )
 
 type ProductHandler interface {
-	AddProduct(*gin.Context)
-	GetMultipleProducts(*gin.Context)
-	GetProduct(*gin.Context)
-	UpdateProduct(*gin.Context)
-	DeleteProduct(*gin.Context)
+	AddProduct(c *gin.Context)
+	GetMultipleProducts(c *gin.Context)
+	GetProduct(c *gin.Context)
+	UpdateProduct(c *gin.Context)
+	DeleteProduct(c *gin.Context)
 }
 
 type productHandler struct {
@@ -107,8 +107,7 @@ func (ph *productHandler) UpdateProduct(c *gin.Context) {
 
 	productId, _ := xid.FromString(c.Param("productId"))
 	productInput.ID = productId
-
-	if err := ph.repo.Update(productInput); err != nil {
+	if err := ph.repo.Update(&productInput); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
