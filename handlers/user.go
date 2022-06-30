@@ -95,6 +95,14 @@ func (uh *userHandler) SignIn(c *gin.Context) {
 
 func (uh *userHandler) GetUser(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
+	payload := utils.CheckUserId(c, userId)
+	if payload == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		return
+	}
+
 	user, err := uh.repo.FindById(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -109,6 +117,14 @@ func (uh *userHandler) GetUser(c *gin.Context) {
 }
 
 func (uh *userHandler) GetMultipleUsers(c *gin.Context) {
+	payload := utils.CheckUserRole(c)
+	if payload == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		return
+	}
+
 	users, err := uh.repo.FindMany()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

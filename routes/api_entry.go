@@ -23,12 +23,12 @@ func RunApi() error {
 	{
 		userRoutes.POST("/signup", userHandler.SignUp)
 		userRoutes.POST("/signin", userHandler.SignIn)
-		userRoutes.GET("/", userHandler.GetMultipleUsers)
-		userRoutes.GET("/:userId", userHandler.GetUser)
 	}
 
 	userProtectedRoutes := api.Group("/users", middlewares.JwtAuthorization())
 	{
+		userProtectedRoutes.GET("/", userHandler.GetMultipleUsers)
+		userProtectedRoutes.GET("/:userId", userHandler.GetUser)
 		userProtectedRoutes.GET("/:userId/wishlist", userHandler.GetUserWishlist)
 		userProtectedRoutes.PATCH("/:userId", userHandler.UpdateUser)
 		userProtectedRoutes.PATCH("/:userId/password", userHandler.UpdatePassword)
