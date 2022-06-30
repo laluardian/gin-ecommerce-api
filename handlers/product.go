@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/laluardian/gin-ecommerce-api/libs"
 	"github.com/laluardian/gin-ecommerce-api/models"
 	"github.com/laluardian/gin-ecommerce-api/repositories"
-	"github.com/laluardian/gin-ecommerce-api/utils"
 	"github.com/rs/xid"
 	"gorm.io/gorm"
 )
@@ -38,7 +38,7 @@ func (ph *productHandler) AddProduct(c *gin.Context) {
 		})
 	}
 
-	payload := utils.CheckUserRole(c)
+	payload := libs.CheckUserRole(c)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -92,7 +92,7 @@ func (ph *productHandler) GetProduct(c *gin.Context) {
 }
 
 func (ph *productHandler) UpdateProduct(c *gin.Context) {
-	payload := utils.CheckUserRole(c)
+	payload := libs.CheckUserRole(c)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -123,7 +123,7 @@ func (ph *productHandler) UpdateProduct(c *gin.Context) {
 }
 
 func (ph *productHandler) DeleteProduct(c *gin.Context) {
-	payload := utils.CheckUserRole(c)
+	payload := libs.CheckUserRole(c)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -155,7 +155,7 @@ func (ph *productHandler) AddOrRemoveWishlistProduct(c *gin.Context) {
 	}
 
 	var user models.User
-	payload := c.MustGet(utils.JwtPayloadKey).(*utils.JwtPayload)
+	payload := c.MustGet(libs.JwtPayloadKey).(*libs.JwtPayload)
 	user.ID = payload.Sub
 
 	// if the user already wishlisted the product, remove the product from wishlist

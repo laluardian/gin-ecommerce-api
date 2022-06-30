@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/laluardian/gin-ecommerce-api/utils"
+	"github.com/laluardian/gin-ecommerce-api/libs"
 )
 
 func JwtAuthorization() gin.HandlerFunc {
@@ -21,7 +21,7 @@ func JwtAuthorization() gin.HandlerFunc {
 		const bearerSchema = "Bearer "
 		getToken := authHeader[len(bearerSchema):]
 
-		payload, err := utils.VerifyToken(getToken)
+		payload, err := libs.VerifyToken(getToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": err.Error(),
@@ -29,7 +29,7 @@ func JwtAuthorization() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(utils.JwtPayloadKey, payload)
+		c.Set(libs.JwtPayloadKey, payload)
 		c.Next()
 	}
 }

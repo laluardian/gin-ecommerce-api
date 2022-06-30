@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/laluardian/gin-ecommerce-api/handlers"
+	"github.com/laluardian/gin-ecommerce-api/libs"
 	"github.com/laluardian/gin-ecommerce-api/middlewares"
-	"github.com/laluardian/gin-ecommerce-api/utils"
 )
 
 func RunApi() error {
 	dsn := os.Getenv("DATA_SOURCE_NAME")
-	db := utils.InitDB(dsn)
+	db := libs.InitDB(dsn)
 	userHandler := handlers.NewUserHandler(db)
 	productHandler := handlers.NewProductHandler(db)
 	addressHandler := handlers.NewAddressHandler(db)

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/laluardian/gin-ecommerce-api/libs"
 	"github.com/laluardian/gin-ecommerce-api/models"
 	"github.com/laluardian/gin-ecommerce-api/repositories"
-	"github.com/laluardian/gin-ecommerce-api/utils"
 	"github.com/rs/xid"
 	"gorm.io/gorm"
 )
@@ -41,7 +41,7 @@ func (uh *userHandler) SignUp(c *gin.Context) {
 		return
 	}
 
-	if err := utils.HashPassword(&userInput.Password); err != nil {
+	if err := libs.HashPassword(&userInput.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -55,7 +55,7 @@ func (uh *userHandler) SignUp(c *gin.Context) {
 		return
 	}
 
-	token, _ := utils.GenerateToken(&userInput)
+	token, _ := libs.GenerateToken(&userInput)
 
 	c.JSON(http.StatusCreated, gin.H{
 		"access_token": token,
@@ -80,8 +80,8 @@ func (uh *userHandler) SignIn(c *gin.Context) {
 		return
 	}
 
-	if isTrue := utils.ComparePassword(user.Password, userInput.Password); isTrue {
-		token, _ := utils.GenerateToken(&user)
+	if isTrue := libs.ComparePassword(user.Password, userInput.Password); isTrue {
+		token, _ := libs.GenerateToken(&user)
 		c.JSON(http.StatusOK, gin.H{
 			"access_token": token,
 		})
@@ -95,7 +95,7 @@ func (uh *userHandler) SignIn(c *gin.Context) {
 
 func (uh *userHandler) GetUser(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -117,7 +117,7 @@ func (uh *userHandler) GetUser(c *gin.Context) {
 }
 
 func (uh *userHandler) GetMultipleUsers(c *gin.Context) {
-	payload := utils.CheckUserRole(c)
+	payload := libs.CheckUserRole(c)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -140,7 +140,7 @@ func (uh *userHandler) GetMultipleUsers(c *gin.Context) {
 
 func (uh *userHandler) GetUserWishlist(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -173,7 +173,7 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 	// param and jwt payload and then compare them manually before performing any db operation in a protected route's handler
 	userId, _ := xid.FromString(c.Param("userId"))
 	// check if the user id from param matches the user id in jwt payload
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -221,7 +221,7 @@ func (uh *userHandler) UpdateUser(c *gin.Context) {
 
 func (uh *userHandler) UpdatePassword(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -246,14 +246,14 @@ func (uh *userHandler) UpdatePassword(c *gin.Context) {
 	}
 
 	// check if the old password is the same as the new password
-	if isTrue := utils.ComparePassword(dbUser.Password, userInput.Password); isTrue {
+	if isTrue := libs.ComparePassword(dbUser.Password, userInput.Password); isTrue {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "The old password cannot be the same as the new password",
 		})
 		return
 	}
 
-	if err := utils.HashPassword(&userInput.Password); err != nil {
+	if err := libs.HashPassword(&userInput.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -275,7 +275,7 @@ func (uh *userHandler) UpdatePassword(c *gin.Context) {
 
 func (uh *userHandler) DeleteUser(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",

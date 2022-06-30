@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/laluardian/gin-ecommerce-api/libs"
 	"github.com/laluardian/gin-ecommerce-api/models"
 	"github.com/laluardian/gin-ecommerce-api/repositories"
-	"github.com/laluardian/gin-ecommerce-api/utils"
 	"github.com/rs/xid"
 	"gorm.io/gorm"
 )
@@ -31,7 +31,7 @@ func NewAddressHandler(db *gorm.DB) AddressHandler {
 
 func (ah *addressHandler) AddAddress(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -62,7 +62,7 @@ func (ah *addressHandler) AddAddress(c *gin.Context) {
 
 func (ah *addressHandler) GetUserAddresses(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -85,7 +85,7 @@ func (ah *addressHandler) GetUserAddresses(c *gin.Context) {
 
 func (ah *addressHandler) GetAddress(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -109,7 +109,7 @@ func (ah *addressHandler) GetAddress(c *gin.Context) {
 
 func (ah *addressHandler) UpdateAddress(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
@@ -142,7 +142,7 @@ func (ah *addressHandler) UpdateAddress(c *gin.Context) {
 
 func (ah *addressHandler) DeleteAddress(c *gin.Context) {
 	userId, _ := xid.FromString(c.Param("userId"))
-	payload := utils.CheckUserId(c, userId)
+	payload := libs.CheckUserId(c, userId)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
