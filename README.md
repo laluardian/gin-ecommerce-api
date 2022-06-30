@@ -3,7 +3,7 @@
 - <s>Product</s>
 - Category
 - Order
-- Wishlist
+- <s>Wishlist</s>
 - Product rating and review (?)
 - Payment (?)
 - etc...
