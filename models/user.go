@@ -16,7 +16,8 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
-	Addresses []Address `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"addresses,omitempty"`
+	Addresses []Address  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"addresses,omitempty"`
+	Wishlist  []*Product `gorm:"many2many:user_wishlist_products" json:"wishlist,omitempty"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {

@@ -16,6 +16,7 @@ type UserHandler interface {
 	SignIn(c *gin.Context)
 	GetUser(c *gin.Context)
 	GetMultipleUsers(c *gin.Context)
+	GetUserWishlist(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	UpdatePassword(c *gin.Context)
 	DeleteUser(c *gin.Context)
@@ -118,6 +119,31 @@ func (uh *userHandler) GetMultipleUsers(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"users": users,
+	})
+}
+
+func (uh *userHandler) GetUserWishlist(c *gin.Context) {
+	userId, _ := xid.FromString(c.Param("userId"))
+	payload := utils.CheckUserId(c, userId)
+	if payload == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		return
+	}
+
+	var user models.User
+	user.ID = userId
+	products, err := uh.repo.FindUserWishlist(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"wishlist": products,
 	})
 }
 

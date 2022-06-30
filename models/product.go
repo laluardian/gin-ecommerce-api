@@ -19,6 +19,8 @@ type Product struct {
 	Quantity    uint32    `gorm:"not null" json:"quantity"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+
+	WishlistedBy []*User `gorm:"many2many:user_wishlist_products" json:"wishlisted_by,omitempty"`
 }
 
 func (p *Product) BeforeCreate(tx *gorm.DB) error {

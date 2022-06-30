@@ -11,6 +11,7 @@ type UserRepository interface {
 	FindByEmail(email string) (models.User, error)
 	FindById(userId xid.ID) (models.User, error)
 	FindMany() ([]models.User, error)
+	FindUserWishlist(user *models.User) ([]models.Product, error)
 	UpdateUser(user *models.User) error
 	UpdatePassword(user *models.User) error
 	Delete(user *models.User) error
@@ -41,6 +42,11 @@ func (ur *userRepository) FindById(userId xid.ID) (user models.User, err error) 
 func (ur *userRepository) FindMany() (users []models.User, err error) {
 	err = ur.db.Find(&users).Error
 	return users, err
+}
+
+func (ur *userRepository) FindUserWishlist(user *models.User) (products []models.Product, err error) {
+	err = ur.db.Model(&user).Association("Wishlist").Find(&products)
+	return products, err
 }
 
 func (ur *userRepository) UpdateUser(user *models.User) error {

@@ -17,6 +17,7 @@ type ProductHandler interface {
 	GetProduct(c *gin.Context)
 	UpdateProduct(c *gin.Context)
 	DeleteProduct(c *gin.Context)
+	AddOrRemoveWishlistProduct(c *gin.Context)
 }
 
 type productHandler struct {
@@ -44,6 +45,8 @@ func (ph *productHandler) AddProduct(c *gin.Context) {
 		})
 		return
 	}
+
+	// TODO check if the user exist
 
 	if err := ph.repo.Create(&productInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -138,5 +141,50 @@ func (ph *productHandler) DeleteProduct(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product successfully deleted",
+	})
+}
+
+func (ph *productHandler) AddOrRemoveWishlistProduct(c *gin.Context) {
+	var product models.Product
+	productId, _ := xid.FromString(c.Param("productId"))
+	product, err := ph.repo.FindById(productId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	var user models.User
+	payload := c.MustGet(utils.JwtPayloadKey).(*utils.JwtPayload)
+	user.ID = payload.Sub
+
+	// if the user already wishlisted the product, remove the product from wishlist
+	for _, dbUser := range product.WishlistedBy {
+		if dbUser.ID == user.ID {
+			if err := ph.repo.RemoveFromWishlist(&product, &user); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Product successfully removed from wishlist",
+			})
+			return
+		}
+	}
+
+	// otherwise, add the product to wishlist
+	product.WishlistedBy = append(product.WishlistedBy, &user)
+	if err := ph.repo.AddToWishlist(&product); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Product successfully added to wishlist",
 	})
 }

@@ -29,6 +29,7 @@ func RunApi() error {
 
 	userProtectedRoutes := api.Group("/users", middlewares.JwtAuthorization())
 	{
+		userProtectedRoutes.GET("/:userId/wishlist", userHandler.GetUserWishlist)
 		userProtectedRoutes.PATCH("/:userId", userHandler.UpdateUser)
 		userProtectedRoutes.PATCH("/:userId/password", userHandler.UpdatePassword)
 		userProtectedRoutes.DELETE("/:userId", userHandler.DeleteUser)
@@ -52,6 +53,7 @@ func RunApi() error {
 	productProtectedRoutes := api.Group("/products", middlewares.JwtAuthorization())
 	{
 		productProtectedRoutes.POST("/", productHandler.AddProduct)
+		productProtectedRoutes.POST("/:productId/wishlist", productHandler.AddOrRemoveWishlistProduct)
 		productProtectedRoutes.PATCH("/:productId", productHandler.UpdateProduct)
 		productProtectedRoutes.DELETE("/:productId", productHandler.DeleteProduct)
 	}
