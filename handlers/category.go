@@ -105,10 +105,10 @@ func (ch *categoryHandler) UpdateCategory(c *gin.Context) {
 	}
 
 	// in this case getting the category record from db is needed in order to get the category id
-	// which is needed for updating the category, this step can be skipped if we instead set category
-	// primary key with slug OR we can also include the id in the URL param and get the id from there...
-	// THERE MUST BE MANY OTHER WAYS to achieve this though and surely this is not the best way, but
-	// for doing it this way is enough for this particular imo
+	// which is needed for updating the category record, this step can be skipped if we instead set
+	// the category primary key with slug OR we can also include the id in the URL param and get the
+	// id from there... and THERE MUST BE MANY OTHER WAYS to achieve this though and surely this is
+	// not the best way, but for this 'example' project I think doing it this way is enough...
 	slug := c.Param("slug")
 	dbCategory, err := ch.repo.FindBySlug(slug)
 	if err != nil {
