@@ -15,6 +15,7 @@ func RunApi() error {
 	userHandler := handlers.NewUserHandler(db)
 	productHandler := handlers.NewProductHandler(db)
 	addressHandler := handlers.NewAddressHandler(db)
+	categoryHandler := handlers.NewCategoryHandler(db)
 
 	r := gin.Default()
 	api := r.Group("/api")
@@ -56,6 +57,19 @@ func RunApi() error {
 		productProtectedRoutes.POST("/:productId/wishlist", productHandler.AddOrRemoveWishlistProduct)
 		productProtectedRoutes.PATCH("/:productId", productHandler.UpdateProduct)
 		productProtectedRoutes.DELETE("/:productId", productHandler.DeleteProduct)
+	}
+
+	categoryRoutes := api.Group("/categories")
+	{
+		categoryRoutes.GET("/", categoryHandler.GetMultipleCategories)
+		categoryRoutes.GET("/:slug", categoryHandler.GetCategory)
+	}
+
+	categoryProtectedRoutes := api.Group("/categories", middlewares.JwtAuthorization())
+	{
+		categoryProtectedRoutes.POST("/", categoryHandler.AddCategory)
+		categoryProtectedRoutes.PATCH("/:slug", categoryHandler.UpdateCategory)
+		categoryProtectedRoutes.DELETE("/:slug", categoryHandler.DeleteCategory)
 	}
 
 	port := os.Getenv("PORT")

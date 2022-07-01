@@ -15,8 +15,13 @@ func InitDB(dsn string) *gorm.DB {
 		log.Fatal("Error connecting to database")
 	}
 
-	db.AutoMigrate(&models.User{}, &models.Product{}, &models.Address{})
-	fmt.Println("Connected to database")
+	db.AutoMigrate(
+		&models.User{},
+		&models.Product{},
+		&models.Address{},
+		&models.Category{},
+	)
 
+	fmt.Println("Connected to database")
 	return db
 }

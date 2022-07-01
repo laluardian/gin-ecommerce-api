@@ -14,6 +14,7 @@ type ProductRepository interface {
 	Delete(productId xid.ID) error
 	AddToWishlist(product *models.Product) error
 	RemoveFromWishlist(product *models.Product, user *models.User) error
+	ClearCategories(product *models.Product) error
 }
 
 type productRepository struct {
@@ -25,21 +26,24 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 }
 
 func (pr *productRepository) Create(product *models.Product) error {
-	return pr.db.Create(&product).Error
+	return pr.db.Omit("Categories.*").Create(&product).Error
 }
 
 func (pr *productRepository) FindMany(keyword string) (products []models.Product, err error) {
-	err = pr.db.Find(&products, "LOWER(name) LIKE LOWER(?)", "%"+keyword+"%").Error
+	err = pr.db.Preload("Categories").Find(&products, "LOWER(name) LIKE LOWER(?)", "%"+keyword+"%").Error
 	return products, err
 }
 
 func (pr *productRepository) FindById(productId xid.ID) (product models.Product, err error) {
-	err = pr.db.Preload("WishlistedBy").First(&product, "id = ?", productId).Error
+	err = pr.db.Preload("WishlistedBy").Preload("Categories").First(&product, "id = ?", productId).Error
 	return product, err
 }
 
 func (pr *productRepository) Update(product *models.Product) error {
-	return pr.db.Save(&product).Error
+	return pr.db.
+		Omit("Categories.*").
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Updates(&product).Error
 }
 
 func (pr *productRepository) Delete(productId xid.ID) error {
@@ -57,5 +61,10 @@ func (pr *productRepository) AddToWishlist(product *models.Product) error {
 
 func (pr *productRepository) RemoveFromWishlist(product *models.Product, user *models.User) error {
 	err := pr.db.Model(&product).Association("WishlistedBy").Delete(user)
+	return err
+}
+
+func (pr *productRepository) ClearCategories(product *models.Product) error {
+	err := pr.db.Model(&product).Association("Categories").Clear()
 	return err
 }

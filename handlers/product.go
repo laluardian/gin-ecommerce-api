@@ -31,13 +31,6 @@ func NewProductHandler(db *gorm.DB) ProductHandler {
 }
 
 func (ph *productHandler) AddProduct(c *gin.Context) {
-	var productInput models.Product
-	if err := c.ShouldBindJSON(&productInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-	}
-
 	payload := libs.CheckUserRole(c)
 	if payload == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -46,9 +39,31 @@ func (ph *productHandler) AddProduct(c *gin.Context) {
 		return
 	}
 
-	// TODO check if the user exist
+	// TODO check if the user exist for extra security (other handlers might need, too)
 
-	if err := ph.repo.Create(&productInput); err != nil {
+	var productInput models.ProductDto
+	if err := c.ShouldBindJSON(&productInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	var product models.Product
+
+	// TODO make this repetitive code DRY (there is a similar one in the UpdateProduct method, too)
+	product.Name = productInput.Name
+	product.Description = productInput.Description
+	product.Price = productInput.Price
+	product.Discount = productInput.Discount
+	product.Quantity = productInput.Quantity
+
+	for _, catId := range productInput.Categories {
+		var category models.Category
+		category.ID = catId
+		product.Categories = append(product.Categories, &category)
+	}
+
+	if err := ph.repo.Create(&product); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -100,7 +115,7 @@ func (ph *productHandler) UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	var productInput models.Product
+	var productInput models.ProductDto
 	if err := c.ShouldBindJSON(&productInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -108,9 +123,32 @@ func (ph *productHandler) UpdateProduct(c *gin.Context) {
 		return
 	}
 
+	var product models.Product
 	productId, _ := xid.FromString(c.Param("productId"))
-	productInput.ID = productId
-	if err := ph.repo.Update(&productInput); err != nil {
+
+	product.ID = productId
+	product.Name = productInput.Name
+	product.Description = productInput.Description
+	product.Price = productInput.Price
+	product.Discount = productInput.Discount
+	product.Quantity = productInput.Quantity
+
+	// clear the Categories field then repopulate it with the new one
+	// in case some of the categories are removed from the product by the admin
+	if err := ph.repo.ClearCategories(&product); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	for _, catId := range productInput.Categories {
+		var category models.Category
+		category.ID = catId
+		product.Categories = append(product.Categories, &category)
+	}
+
+	if err := ph.repo.Update(&product); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
