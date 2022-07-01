@@ -1,7 +1,7 @@
 ## TODO
 - Tests
 - <s>Product</s>
-- Category
+- <s>Category</s>
 - Order
 - <s>Wishlist</s>
 - Product rating and review (?)
