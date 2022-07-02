@@ -24,18 +24,6 @@ type Product struct {
 	Categories   []*Category `gorm:"many2many:product_categories" json:"categories,omitempty"`
 }
 
-type ProductDto struct {
-	Name        string `json:"name" binding:"required"`
-	Description string `json:"description"`
-	Price       uint32 `json:"price" binding:"required"`
-	Discount    uint8  `json:"discount"`
-	Quantity    uint32 `json:"quantity" binding:"required"`
-
-	// the Categories field gonna be populated from client side with  the category ids
-	// and later those ids will be used in the handlers to get product records from db
-	Categories []xid.ID `json:"categories"`
-}
-
 func (p *Product) BeforeCreate(tx *gorm.DB) error {
 	p.ID = xid.New()
 	return nil
