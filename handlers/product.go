@@ -64,7 +64,7 @@ func (ph *productHandler) AddProduct(c *gin.Context) {
 	}
 
 	if err := ph.repo.Create(&product); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -133,10 +133,10 @@ func (ph *productHandler) UpdateProduct(c *gin.Context) {
 	product.Discount = productInput.Discount
 	product.Quantity = productInput.Quantity
 
-	// clear the Categories field then repopulate it with the new one
-	// in case some of the categories are removed from the product by the admin
+	// clear the Categories field then repopulate it later in case some of
+	// the categories are removed from the product by the admin
 	if err := ph.repo.ClearCategories(&product); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -191,6 +191,11 @@ func (ph *productHandler) AddOrRemoveWishlistProduct(c *gin.Context) {
 			"error": err.Error(),
 		})
 	}
+
+	// note that this method updates wishlist items from a product perspective, that means
+	// it adds or removes user references from the WishlistedBy field in product records which
+	// is a back-reference to the Wishlist field in user records... this is possible because
+	// the product and the user tables are connected by a join table (many-to-many relationship)
 
 	var user models.User
 	payload := c.MustGet(libs.JwtPayloadKey).(*libs.JwtPayload)

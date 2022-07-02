@@ -46,7 +46,7 @@ func (ch *categoryHandler) AddCategory(c *gin.Context) {
 	}
 
 	if err := ch.repo.Create(&categoryInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -112,7 +112,7 @@ func (ch *categoryHandler) UpdateCategory(c *gin.Context) {
 	slug := c.Param("slug")
 	dbCategory, err := ch.repo.FindBySlug(slug)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 	}
